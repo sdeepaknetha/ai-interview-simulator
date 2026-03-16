@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI Interview Simulator</title>
+</head>
+
+<body>
+
+<h1>AI Interview Simulator</h1>
+
+<select id="type">
+<option value="python">Python Developer</option>
+<option value="java">Java Developer</option>
+<option value="data">Data Analyst</option>
+<option value="hr">HR Interview</option>
+</select>
+
+<button onclick="startInterview()">Start Interview</button>
+<button onclick="startEmotion()">Start Emotion Detection</button>
+
+<hr>
+
+<h3 id="question"></h3>
+
+<textarea id="answer" rows="6" cols="70"></textarea>
+
+<br><br>
+
+<button onclick="startVoice()">🎤 Speak Answer</button>
+<button onclick="submitAnswer()">Submit Answer</button>
+
+<h3 id="result"></h3>
+
+<div id="reportSection" style="display:none;">
+<h2>Interview Completed 🎉</h2>
+<button onclick="downloadReport()">Download Interview Report</button>
+</div>
+
+<script>
+
+let qIndex = 0
+let total = 5
+let type = ""
+
+function startInterview(){
+fetch("/start_emotion")
+type = document.getElementById("type").value
+qIndex = 0
+loadQuestion()
+}
+
+async function loadQuestion(){
+
+let form = new FormData()
+form.append("interview_type",type)
+form.append("q_index",qIndex)
+
+let res = await fetch("/get_question/",{method:"POST",body:form})
+let data = await res.json()
+
+document.getElementById("question").innerText =
+"Question "+(qIndex+1)+" / "+total+" : "+data.question
+
+document.getElementById("answer").value=""
+document.getElementById("result").innerText=""
+
+}
+
+async function submitAnswer(){
+
+let ans = document.getElementById("answer").value
+
+let form = new FormData()
+form.append("interview_type",type)
+form.append("q_index",qIndex)
+form.append("user_answer",ans)
+
+let res = await fetch("/submit_answer/",{method:"POST",body:form})
+let data = await res.json()
+
+document.getElementById("result").innerText =
+"Score : "+data.score+" / 100 | "+data.suggestion
+
+qIndex++
+
+if(qIndex < total){
+setTimeout(loadQuestion,2000)
+}else{
+document.getElementById("reportSection").style.display="block"
+}
+
+}
+
+function downloadReport(){
+window.open("/report")
+}
+
+function startVoice(){
+
+let recognition = new webkitSpeechRecognition()
+
+recognition.lang="en-US"
+recognition.start()
+
+recognition.onresult=function(event){
+
+let transcript=event.results[0][0].transcript
+document.getElementById("answer").value=transcript
+
+}
+
+}
+
+function startEmotion(){
+fetch("/emotion")
+alert("Webcam Emotion Detection Started. Press Q to close.")
+}
+
+</script>
+
+</body>
+</html>
