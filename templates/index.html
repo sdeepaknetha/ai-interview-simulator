@@ -2,10 +2,58 @@
 <html>
 
 <head>
+
 <title>AI Interview Simulator</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family: Arial;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+}
+
+.container{
+width:700px;
+margin-top:40px;
+background:#1e293b;
+padding:30px;
+border-radius:10px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+border:none;
+background:#3b82f6;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+textarea{
+width:100%;
+}
+
+select{
+padding:8px;
+}
+
+#dashboard{
+display:none;
+}
+
+</style>
+
 </head>
 
 <body>
+
+<div class="container">
 
 <h1>AI Interview Simulator</h1>
 
@@ -17,13 +65,12 @@
 </select>
 
 <button onclick="startInterview()">Start Interview</button>
-<button onclick="startEmotion()">Start Emotion Detection</button>
 
 <hr>
 
 <h3 id="question"></h3>
 
-<textarea id="answer" rows="6" cols="70"></textarea>
+<textarea id="answer" rows="6"></textarea>
 
 <br><br>
 
@@ -33,8 +80,22 @@
 <h3 id="result"></h3>
 
 <div id="reportSection" style="display:none;">
+
 <h2>Interview Completed 🎉</h2>
+
 <button onclick="downloadReport()">Download Interview Report</button>
+<button onclick="showDashboard()">View Dashboard</button>
+
+</div>
+
+<div id="dashboard">
+
+<h2>Interview Analytics</h2>
+
+<canvas id="scoreChart"></canvas>
+
+</div>
+
 </div>
 
 <script>
@@ -43,23 +104,33 @@ let qIndex = 0
 let total = 5
 let type = ""
 
+let scores=[]
+
 function startInterview(){
+
 fetch("/start_emotion")
-type = document.getElementById("type").value
-qIndex = 0
+
+type=document.getElementById("type").value
+qIndex=0
+scores=[]
+
+document.getElementById("reportSection").style.display="none"
+document.getElementById("dashboard").style.display="none"
+
 loadQuestion()
+
 }
 
 async function loadQuestion(){
 
-let form = new FormData()
+let form=new FormData()
 form.append("interview_type",type)
 form.append("q_index",qIndex)
 
-let res = await fetch("/get_question/",{method:"POST",body:form})
-let data = await res.json()
+let res=await fetch("/get_question/",{method:"POST",body:form})
+let data=await res.json()
 
-document.getElementById("question").innerText =
+document.getElementById("question").innerText=
 "Question "+(qIndex+1)+" / "+total+" : "+data.question
 
 document.getElementById("answer").value=""
@@ -69,55 +140,79 @@ document.getElementById("result").innerText=""
 
 async function submitAnswer(){
 
-let ans = document.getElementById("answer").value
+let ans=document.getElementById("answer").value
 
-let form = new FormData()
+let form=new FormData()
 form.append("interview_type",type)
 form.append("q_index",qIndex)
 form.append("user_answer",ans)
 
-let res = await fetch("/submit_answer/",{method:"POST",body:form})
-let data = await res.json()
+let res=await fetch("/submit_answer/",{method:"POST",body:form})
+let data=await res.json()
 
-document.getElementById("result").innerText =
+scores.push(data.score)
+
+document.getElementById("result").innerText=
 "Score : "+data.score+" / 100 | "+data.suggestion
 
 qIndex++
 
-if(qIndex < total){
+if(qIndex<total){
 setTimeout(loadQuestion,2000)
 }else{
+document.getElementById("question").innerText=""
 document.getElementById("reportSection").style.display="block"
 }
 
 }
 
+function showDashboard(){
+
+document.getElementById("dashboard").style.display="block"
+
+let ctx=document.getElementById("scoreChart")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Q1","Q2","Q3","Q4","Q5"],
+datasets:[{
+label:"Interview Scores",
+data:scores
+}]
+}
+})
+
+}
+
 function downloadReport(){
+
+fetch("/stop_emotion")
+
 window.open("/report")
+
 }
 
 function startVoice(){
 
-let recognition = new webkitSpeechRecognition()
+let recognition=new webkitSpeechRecognition()
 
 recognition.lang="en-US"
+
 recognition.start()
 
 recognition.onresult=function(event){
 
 let transcript=event.results[0][0].transcript
+
 document.getElementById("answer").value=transcript
 
 }
 
 }
 
-function startEmotion(){
-fetch("/emotion")
-alert("Webcam Emotion Detection Started. Press Q to close.")
-}
-
 </script>
 
 </body>
+
 </html>
