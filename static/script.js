@@ -2,6 +2,9 @@ let questions = [];
 let current = 0;
 let answers = [];
 
+let time = 30;
+let timerInterval;
+
 async function startInterview() {
     let role = document.getElementById("role").value;
     let level = document.getElementById("level").value;
@@ -10,6 +13,9 @@ async function startInterview() {
     const res = await fetch(`/questions?role=${role}&level=${level}&limit=${limit}`);
     questions = await res.json();
 
+    current = 0;
+    answers = [];
+
     document.querySelector(".controls").style.display = "none";
     document.getElementById("quiz").classList.remove("hidden");
 
@@ -17,6 +23,9 @@ async function startInterview() {
 }
 
 function showQuestion() {
+    time = 30;
+    startTimer();
+
     document.getElementById("progress").innerText =
         `Question ${current + 1} / ${questions.length}`;
 
@@ -24,15 +33,31 @@ function showQuestion() {
         questions[current].question;
 }
 
-function submitAnswer() {
+function startTimer() {
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = "⏳ " + time;
+
+        if (time === 0) {
+            clearInterval(timerInterval);
+            submitAnswer(true);
+        }
+    }, 1000);
+}
+
+function submitAnswer(auto = false) {
+    clearInterval(timerInterval);
+
     let ans = document.getElementById("answer").value;
 
-    if (!ans.trim()) {
+    if (!auto && !ans.trim()) {
         alert("Enter answer!");
         return;
     }
 
-    answers.push(ans);
+    answers.push(ans || "No Answer");
     document.getElementById("answer").value = "";
 
     current++;
