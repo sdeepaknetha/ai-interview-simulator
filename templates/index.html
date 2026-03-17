@@ -4,23 +4,31 @@
     <title>AI Interview Simulator</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
+<div class="bg"></div>
+
 <div class="container">
-    <h1>AI Interview Simulator</h1>
 
-    <button onclick="startInterview()">Start Interview</button>
+    <h1>🚀 AI Interview Simulator</h1>
 
-    <div id="quiz" class="hidden">
+    <button id="startBtn" onclick="startInterview()">Start Interview</button>
+
+    <div id="quiz" class="card hidden">
+        <h3 id="progress"></h3>
         <h2 id="question"></h2>
+
         <textarea id="answer" placeholder="Type your answer..."></textarea>
-        <button onclick="submitAnswer()">Next</button>
+
+        <button onclick="submitAnswer()">Next ➜</button>
     </div>
 
-    <div id="result" class="hidden">
-        <h2>Your Score</h2>
+    <div id="result" class="card hidden">
+        <h2>🎯 Your Score</h2>
         <h1 id="score"></h1>
     </div>
+
 </div>
 
 <script src="/static/script.js"></script>
