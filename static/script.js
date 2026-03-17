@@ -3,10 +3,14 @@ let current = 0;
 let answers = [];
 
 async function startInterview() {
-    const res = await fetch("/questions");
+    let role = document.getElementById("role").value;
+    let level = document.getElementById("level").value;
+    let limit = document.getElementById("limit").value;
+
+    const res = await fetch(`/questions?role=${role}&level=${level}&limit=${limit}`);
     questions = await res.json();
 
-    document.getElementById("startBtn").style.display = "none";
+    document.querySelector(".controls").style.display = "none";
     document.getElementById("quiz").classList.remove("hidden");
 
     showQuestion();
@@ -23,8 +27,8 @@ function showQuestion() {
 function submitAnswer() {
     let ans = document.getElementById("answer").value;
 
-    if (ans.trim() === "") {
-        alert("Please enter your answer!");
+    if (!ans.trim()) {
+        alert("Enter answer!");
         return;
     }
 
@@ -43,15 +47,23 @@ function submitAnswer() {
 async function finishInterview() {
     document.getElementById("quiz").classList.add("hidden");
 
+    let role = document.getElementById("role").value;
+
     const res = await fetch("/evaluate", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({answers: answers})
+        body: JSON.stringify({answers: answers, role: role})
     });
 
     const data = await res.json();
 
     document.getElementById("result").classList.remove("hidden");
-    document.getElementById("score").innerText =
-        data.average_score + "%";
+    document.getElementById("score").innerText = data.average_score + "%";
+
+    let fbHTML = "<h3>Feedback:</h3>";
+    data.feedback.forEach(f => {
+        fbHTML += `<p>• ${f}</p>`;
+    });
+
+    document.getElementById("feedbackBox").innerHTML = fbHTML;
 }
