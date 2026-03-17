@@ -4,7 +4,7 @@
     <title>AI Interview Simulator</title>
     <link rel="stylesheet" href="/static/style.css">
 
-    <!-- Chart.js CDN -->
+    <!-- Chart.js (for dashboard) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -16,6 +16,7 @@
 
     <h1>🚀 AI Interview Simulator</h1>
 
+    <!-- CONTROLS -->
     <div class="controls">
         <select id="role">
             <option value="python">Python Developer</option>
@@ -25,4 +26,87 @@
             <option value="fullstack">Full Stack Developer</option>
             <option value="data_analyst">Data Analyst</option>
             <option value="data_scientist">Data Scientist</option>
-           
+            <option value="devops">DevOps Engineer</option>
+            <option value="cloud">Cloud Engineer</option>
+            <option value="hr">HR Interview</option>
+        </select>
+
+        <select id="level">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+
+        <select id="limit">
+            <option value="5">5 Questions</option>
+            <option value="10">10 Questions</option>
+        </select>
+
+        <button onclick="startInterview()">Start Interview 🚀</button>
+    </div>
+
+    <!-- QUIZ CARD -->
+    <div id="quiz" class="card hidden">
+        
+        <!-- TIMER -->
+        <div id="timer">⏳ 30</div>
+
+        <!-- PROGRESS -->
+        <div id="progress"></div>
+
+        <!-- QUESTION -->
+        <h2 id="question"></h2>
+
+        <!-- ANSWER -->
+        <textarea id="answer" placeholder="Type your answer..."></textarea>
+
+        <button onclick="submitAnswer()">Next ➜</button>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="result" class="card hidden">
+        <h2>🎯 Your Score</h2>
+        <h1 id="score"></h1>
+
+        <!-- CHART -->
+        <canvas id="scoreChart" width="300" height="200"></canvas>
+
+        <!-- FEEDBACK -->
+        <div id="feedbackBox"></div>
+
+        <!-- RESTART -->
+        <button onclick="location.reload()">Restart 🔄</button>
+    </div>
+
+</div>
+
+<script src="/static/script.js"></script>
+
+<!-- CHART SCRIPT -->
+<script>
+function renderChart(score) {
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Score', 'Remaining'],
+            datasets: [{
+                data: [score, 100 - score]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
