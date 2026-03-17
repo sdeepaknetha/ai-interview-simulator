@@ -1,218 +1,28 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
-<title>AI Interview Simulator</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-
-body{
-font-family: Arial;
-background:#0f172a;
-color:white;
-display:flex;
-justify-content:center;
-}
-
-.container{
-width:700px;
-margin-top:40px;
-background:#1e293b;
-padding:30px;
-border-radius:10px;
-}
-
-button{
-padding:10px 20px;
-margin:5px;
-border:none;
-background:#3b82f6;
-color:white;
-border-radius:5px;
-cursor:pointer;
-}
-
-textarea{
-width:100%;
-}
-
-select{
-padding:8px;
-}
-
-#dashboard{
-display:none;
-}
-
-</style>
-
+    <title>AI Interview Simulator</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
 
 <div class="container">
+    <h1>AI Interview Simulator</h1>
 
-<h1>AI Interview Simulator</h1>
+    <button onclick="startInterview()">Start Interview</button>
 
-<select id="type">
-<option value="python">Python Developer</option>
-<option value="java">Java Developer</option>
-<option value="data">Data Analyst</option>
-<option value="hr">HR Interview</option>
-</select>
+    <div id="quiz" class="hidden">
+        <h2 id="question"></h2>
+        <textarea id="answer" placeholder="Type your answer..."></textarea>
+        <button onclick="submitAnswer()">Next</button>
+    </div>
 
-<button onclick="startInterview()">Start Interview</button>
-
-<hr>
-
-<h3 id="question"></h3>
-
-<textarea id="answer" rows="6"></textarea>
-
-<br><br>
-
-<button onclick="startVoice()">🎤 Speak Answer</button>
-<button onclick="submitAnswer()">Submit Answer</button>
-
-<h3 id="result"></h3>
-
-<div id="reportSection" style="display:none;">
-
-<h2>Interview Completed 🎉</h2>
-
-<button onclick="downloadReport()">Download Interview Report</button>
-<button onclick="showDashboard()">View Dashboard</button>
-
+    <div id="result" class="hidden">
+        <h2>Your Score</h2>
+        <h1 id="score"></h1>
+    </div>
 </div>
 
-<div id="dashboard">
-
-<h2>Interview Analytics</h2>
-
-<canvas id="scoreChart"></canvas>
-
-</div>
-
-</div>
-
-<script>
-
-let qIndex = 0
-let total = 5
-let type = ""
-
-let scores=[]
-
-function startInterview(){
-
-fetch("/start_emotion")
-
-type=document.getElementById("type").value
-qIndex=0
-scores=[]
-
-document.getElementById("reportSection").style.display="none"
-document.getElementById("dashboard").style.display="none"
-
-loadQuestion()
-
-}
-
-async function loadQuestion(){
-
-let form=new FormData()
-form.append("interview_type",type)
-form.append("q_index",qIndex)
-
-let res=await fetch("/get_question/",{method:"POST",body:form})
-let data=await res.json()
-
-document.getElementById("question").innerText=
-"Question "+(qIndex+1)+" / "+total+" : "+data.question
-
-document.getElementById("answer").value=""
-document.getElementById("result").innerText=""
-
-}
-
-async function submitAnswer(){
-
-let ans=document.getElementById("answer").value
-
-let form=new FormData()
-form.append("interview_type",type)
-form.append("q_index",qIndex)
-form.append("user_answer",ans)
-
-let res=await fetch("/submit_answer/",{method:"POST",body:form})
-let data=await res.json()
-
-scores.push(data.score)
-
-document.getElementById("result").innerText=
-"Score : "+data.score+" / 100 | "+data.suggestion
-
-qIndex++
-
-if(qIndex<total){
-setTimeout(loadQuestion,2000)
-}else{
-document.getElementById("question").innerText=""
-document.getElementById("reportSection").style.display="block"
-}
-
-}
-
-function showDashboard(){
-
-document.getElementById("dashboard").style.display="block"
-
-let ctx=document.getElementById("scoreChart")
-
-new Chart(ctx,{
-type:"bar",
-data:{
-labels:["Q1","Q2","Q3","Q4","Q5"],
-datasets:[{
-label:"Interview Scores",
-data:scores
-}]
-}
-})
-
-}
-
-function downloadReport(){
-
-fetch("/stop_emotion")
-
-window.open("/report")
-
-}
-
-function startVoice(){
-
-let recognition=new webkitSpeechRecognition()
-
-recognition.lang="en-US"
-
-recognition.start()
-
-recognition.onresult=function(event){
-
-let transcript=event.results[0][0].transcript
-
-document.getElementById("answer").value=transcript
-
-}
-
-}
-
-</script>
-
+<script src="/static/script.js"></script>
 </body>
-
 </html>
