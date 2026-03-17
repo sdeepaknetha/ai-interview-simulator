@@ -85,6 +85,8 @@ async function finishInterview() {
     document.getElementById("result").classList.remove("hidden");
     document.getElementById("score").innerText = data.average_score + "%";
 
+    renderChart(data.average_score);
+
     let fbHTML = "<h3>Feedback:</h3>";
     data.feedback.forEach(f => {
         fbHTML += `<p>• ${f}</p>`;
