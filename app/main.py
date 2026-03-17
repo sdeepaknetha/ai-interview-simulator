@@ -9,7 +9,6 @@ from app.questions import questions_data
 
 app = FastAPI()
 
-# Static + Templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
