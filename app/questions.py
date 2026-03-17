@@ -1,99 +1,131 @@
-questions = [
-    # 🔹 Python
-    {
-        "question": "What is Python?",
-        "answer": "Python is a high level programming language used for web development data science automation"
-    },
-    {
-        "question": "What are Python data types?",
-        "answer": "Python data types include int float string list tuple dictionary set"
-    },
-    {
-        "question": "What is a list in Python?",
-        "answer": "List is a collection data type which is ordered mutable and allows duplicate values"
+questions_data = {
+
+    "python": {
+        "easy": [
+            {"question": "What is Python?"},
+            {"question": "What is a list?"}
+        ],
+        "medium": [
+            {"question": "Explain OOP in Python."},
+            {"question": "What are decorators?"}
+        ],
+        "hard": [
+            {"question": "Explain multithreading in Python."},
+            {"question": "What is GIL?"}
+        ]
     },
 
-    # 🔹 OOP
-    {
-        "question": "What is Object Oriented Programming?",
-        "answer": "Object oriented programming is a programming paradigm based on objects and classes"
-    },
-    {
-        "question": "Explain encapsulation.",
-        "answer": "Encapsulation is wrapping data and methods into a single unit and restricting access"
-    },
-    {
-        "question": "What is inheritance?",
-        "answer": "Inheritance allows a class to acquire properties and methods of another class"
-    },
-    {
-        "question": "What is polymorphism?",
-        "answer": "Polymorphism allows methods to perform different tasks based on input"
+    "java": {
+        "easy": [
+            {"question": "What is Java?"},
+            {"question": "What is JDK?"}
+        ],
+        "medium": [
+            {"question": "Explain OOP in Java."},
+            {"question": "What is multithreading?"}
+        ],
+        "hard": [
+            {"question": "Explain JVM internals."},
+            {"question": "What is garbage collection?"}
+        ]
     },
 
-    # 🔹 DBMS / SQL
-    {
-        "question": "What is SQL?",
-        "answer": "SQL is a structured query language used to manage and query databases"
-    },
-    {
-        "question": "What is a primary key?",
-        "answer": "Primary key uniquely identifies each record in a table"
-    },
-    {
-        "question": "What is normalization?",
-        "answer": "Normalization is the process of organizing data to reduce redundancy"
-    },
-
-    # 🔹 Web Development
-    {
-        "question": "What is HTML?",
-        "answer": "HTML is a markup language used to structure web pages"
-    },
-    {
-        "question": "What is CSS?",
-        "answer": "CSS is used to style and design web pages"
-    },
-    {
-        "question": "What is JavaScript?",
-        "answer": "JavaScript is a scripting language used to make web pages interactive"
+    "frontend": {
+        "easy": [
+            {"question": "What is HTML?"},
+            {"question": "What is CSS?"}
+        ],
+        "medium": [
+            {"question": "What is JavaScript?"},
+            {"question": "Explain DOM."}
+        ],
+        "hard": [
+            {"question": "Explain event delegation."},
+            {"question": "What is React virtual DOM?"}
+        ]
     },
 
-    # 🔹 Backend / APIs
-    {
-        "question": "What is an API?",
-        "answer": "API is an interface that allows communication between different software systems"
-    },
-    {
-        "question": "What is FastAPI?",
-        "answer": "FastAPI is a modern web framework for building APIs using Python"
-    },
-
-    # 🔹 Data Structures
-    {
-        "question": "What is a stack?",
-        "answer": "Stack is a data structure that follows last in first out principle"
-    },
-    {
-        "question": "What is a queue?",
-        "answer": "Queue is a data structure that follows first in first out principle"
+    "backend": {
+        "easy": [
+            {"question": "What is backend development?"}
+        ],
+        "medium": [
+            {"question": "What is REST API?"}
+        ],
+        "hard": [
+            {"question": "Explain microservices architecture."}
+        ]
     },
 
-    # 🔹 HR Questions (VERY IMPORTANT ⭐)
-    {
-        "question": "Tell me about yourself.",
-        "answer": "I am a computer science student with strong interest in software development problem solving and learning new technologies"
+    "fullstack": {
+        "easy": [
+            {"question": "What is full stack development?"}
+        ],
+        "medium": [
+            {"question": "Explain frontend vs backend."}
+        ],
+        "hard": [
+            {"question": "How do you design scalable applications?"}
+        ]
     },
-    {
-        "question": "What are your strengths?",
-        "answer": "My strengths include problem solving quick learning and good communication skills"
+
+    "data_analyst": {
+        "easy": [
+            {"question": "What is SQL?"}
+        ],
+        "medium": [
+            {"question": "Explain joins."}
+        ],
+        "hard": [
+            {"question": "Explain indexing and optimization."}
+        ]
     },
-    {
-        "question": "Why should we hire you?",
-        "answer": "You should hire me because I am hardworking quick learner and passionate about contributing to the company"
+
+    "data_scientist": {
+        "easy": [
+            {"question": "What is data science?"}
+        ],
+        "medium": [
+            {"question": "What is machine learning?"}
+        ],
+        "hard": [
+            {"question": "Explain overfitting and underfitting."}
+        ]
     },
-    {
-        "question": "Where do you see yourself in 5 years?",
-        "answer": "I see myself growing as a skilled software engineer contributing to meaningful projects"
+
+    "devops": {
+        "easy": [
+            {"question": "What is DevOps?"}
+        ],
+        "medium": [
+            {"question": "What is CI/CD?"}
+        ],
+        "hard": [
+            {"question": "Explain Docker and Kubernetes."}
+        ]
+    },
+
+    "cloud": {
+        "easy": [
+            {"question": "What is cloud computing?"}
+        ],
+        "medium": [
+            {"question": "What are cloud service models?"}
+        ],
+        "hard": [
+            {"question": "Explain AWS architecture."}
+        ]
+    },
+
+    "hr": {
+        "easy": [
+            {"question": "Tell me about yourself."}
+        ],
+        "medium": [
+            {"question": "Why should we hire you?"}
+        ],
+        "hard": [
+            {"question": "Describe a failure and what you learned."}
+        ]
     }
-]
+}
