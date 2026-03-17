@@ -1,8 +1,5 @@
 fastapi
 uvicorn
-opencv-python-headless
-reportlab
 jinja2
+reportlab
 python-multipart
-gunicorn
-torch
