@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-sentence-transformers
 opencv-python-headless
 reportlab
 jinja2
