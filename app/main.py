@@ -1,45 +1,63 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, Request, Query
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from app.questions import questions
+from pydantic import BaseModel
+import random
+
+from app.questions import questions_data
 
 app = FastAPI()
+
+# Static + Templates
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-def calculate_score(user_answer, correct_answer):
-    user_words = set(user_answer.lower().split())
-    correct_words = set(correct_answer.lower().split())
-    if len(correct_words) == 0:
-        return 0
-    return round(len(user_words & correct_words) / len(correct_words) * 100, 2)
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+
 @app.get("/questions")
-def get_questions():
-    return [{"question": q["question"]} for q in questions]
+def get_questions(role: str, level: str, limit: int = Query(5)):
+    data = questions_data.get(role, {}).get(level, [])
+    random.shuffle(data)
+    return data[:limit]
+
+
+class AnswerModel(BaseModel):
+    answers: list
+    role: str
+
 
 @app.post("/evaluate")
-async def evaluate(data: dict):
-    total = 0
-    results = []
+def evaluate(data: AnswerModel):
+    scores = []
+    feedback = []
 
-    for i, ans in enumerate(data["answers"]):
-        correct = questions[i]["answer"]
-        score = calculate_score(ans, correct)
-        total += score
+    for ans in data.answers:
+        length = len(ans.strip())
 
-        results.append({
-            "question": questions[i]["question"],
-            "your_answer": ans,
-            "score": score
-        })
+        if length > 80:
+            score = random.randint(8, 10)
+            fb = "Excellent answer with good depth."
+        elif length > 40:
+            score = random.randint(6, 8)
+            fb = "Good answer but can be more structured."
+        elif length > 15:
+            score = random.randint(4, 6)
+            fb = "Basic answer, try to improve explanation."
+        else:
+            score = random.randint(2, 4)
+            fb = "Very short answer, needs improvement."
 
-    avg = round(total / len(data["answers"]), 2)
+        scores.append(score)
+        feedback.append(fb)
 
-    return JSONResponse({
-        "average_score": avg,
-        "results": results
-    })
+    avg = sum(scores) / len(scores)
+
+    return {
+        "average_score": round(avg * 10, 2),
+        "feedback": feedback
+    }
