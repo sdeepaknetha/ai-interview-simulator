@@ -6,19 +6,28 @@ async function startInterview() {
     const res = await fetch("/questions");
     questions = await res.json();
 
-    document.querySelector("button").style.display = "none";
+    document.getElementById("startBtn").style.display = "none";
     document.getElementById("quiz").classList.remove("hidden");
 
     showQuestion();
 }
 
 function showQuestion() {
+    document.getElementById("progress").innerText =
+        `Question ${current + 1} / ${questions.length}`;
+
     document.getElementById("question").innerText =
-        `Question ${current + 1}: ${questions[current].question}`;
+        questions[current].question;
 }
 
 function submitAnswer() {
     let ans = document.getElementById("answer").value;
+
+    if (ans.trim() === "") {
+        alert("Please enter your answer!");
+        return;
+    }
+
     answers.push(ans);
     document.getElementById("answer").value = "";
 
