@@ -34,29 +34,58 @@ class AnswerModel(BaseModel):
 def evaluate(data: AnswerModel):
     scores = []
     feedback = []
+    strengths = 0
+    weaknesses = 0
+
+    # Role-based keywords
+    role_keywords = {
+        "python": ["function", "loop", "list", "dictionary", "class", "object"],
+        "java": ["class", "object", "jvm", "inheritance", "polymorphism"],
+        "data_analyst": ["sql", "data", "analysis", "query", "table", "join"],
+        "hr": ["team", "challenge", "experience", "learn", "growth"]
+    }
+
+    keywords = role_keywords.get(data.role, [])
 
     for ans in data.answers:
+        ans_lower = ans.lower()
         length = len(ans.strip())
 
-        if length > 80:
-            score = random.randint(8, 10)
-            fb = "Excellent answer with good depth."
-        elif length > 40:
-            score = random.randint(6, 8)
-            fb = "Good answer but can be more structured."
+        keyword_score = sum(1 for k in keywords if k in ans_lower)
+
+        # Smart scoring logic
+        if length > 80 and keyword_score >= 2:
+            score = 9
+            fb = "Strong answer with technical depth and clarity."
+            strengths += 1
+        elif length > 40 and keyword_score >= 1:
+            score = 7
+            fb = "Good answer but can be more structured and detailed."
+            strengths += 1
         elif length > 15:
-            score = random.randint(4, 6)
-            fb = "Basic answer, try to improve explanation."
+            score = 5
+            fb = "Basic answer, lacks technical depth."
+            weaknesses += 1
         else:
-            score = random.randint(2, 4)
+            score = 3
             fb = "Very short answer, needs improvement."
+            weaknesses += 1
 
         scores.append(score)
         feedback.append(fb)
 
     avg = sum(scores) / len(scores)
 
+    # Final AI-style summary
+    if strengths > weaknesses:
+        summary = "You performed well with strong conceptual understanding."
+    elif weaknesses > strengths:
+        summary = "You need improvement in explaining concepts clearly."
+    else:
+        summary = "Balanced performance, but there is room to improve."
+
     return {
         "average_score": round(avg * 10, 2),
-        "feedback": feedback
+        "feedback": feedback,
+        "summary": summary
     }
