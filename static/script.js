@@ -41,8 +41,14 @@ function showQuestion() {
         document.getElementById("progress").innerText =
             `Question ${current + 1} / ${questions.length}`;
 
-        document.getElementById("question").innerText =
-            questions[current].question;
+        // 🔥 SAFE QUESTION ACCESS
+        if (questions[current] && questions[current].question) {
+            document.getElementById("question").innerText =
+                questions[current].question;
+        } else {
+            document.getElementById("question").innerText =
+                "Error loading question";
+        }
 
     } catch (err) {
         console.error("Show Question Error:", err);
@@ -54,9 +60,13 @@ function startTimer() {
 
     timerInterval = setInterval(() => {
         time--;
-        document.getElementById("timer").innerText = "⏳ " + time;
 
-        if (time === 0) {
+        const timerEl = document.getElementById("timer");
+        if (timerEl) {
+            timerEl.innerText = "⏳ " + time;
+        }
+
+        if (time <= 0) {
             clearInterval(timerInterval);
             submitAnswer(true);
         }
@@ -67,7 +77,8 @@ function submitAnswer(auto = false) {
     try {
         clearInterval(timerInterval);
 
-        let ans = document.getElementById("answer").value;
+        let ansEl = document.getElementById("answer");
+        let ans = ansEl ? ansEl.value : "";
 
         if (!auto && !ans.trim()) {
             alert("Enter answer!");
@@ -75,7 +86,8 @@ function submitAnswer(auto = false) {
         }
 
         answers.push(ans || "No Answer");
-        document.getElementById("answer").value = "";
+
+        if (ansEl) ansEl.value = "";
 
         current++;
 
@@ -108,18 +120,22 @@ async function finishInterview() {
 
         document.getElementById("result").classList.remove("hidden");
 
-        // ✅ SAFE SCORE
-        document.getElementById("score").innerText =
-            (data.average_score ? data.average_score : 0) + "%";
+        // ✅ SCORE (SAFE)
+        const scoreEl = document.getElementById("score");
+        if (scoreEl) {
+            scoreEl.innerText = (data.average_score || 0) + "%";
+        }
 
-        // ✅ SAFE SUMMARY
+        // ✅ SUMMARY (SAFE)
         const summaryEl = document.getElementById("summary");
         if (summaryEl) {
             summaryEl.innerText =
                 data.summary || "Performance summary not available.";
         }
 
-        // ✅ SAFE FEEDBACK
+        // ✅ FEEDBACK (SAFE)
+        const feedbackEl = document.getElementById("feedbackBox");
+
         let fbHTML = "<h3>Feedback:</h3>";
 
         if (data.feedback && data.feedback.length > 0) {
@@ -130,11 +146,17 @@ async function finishInterview() {
             fbHTML += "<p>No feedback available</p>";
         }
 
-        document.getElementById("feedbackBox").innerHTML = fbHTML;
+        if (feedbackEl) {
+            feedbackEl.innerHTML = fbHTML;
+        }
 
-        // ✅ SAFE CHART (no crash)
-        if (typeof renderChart === "function") {
-            renderChart(data.average_score || 0);
+        // ✅ CHART (FULL SAFE)
+        try {
+            if (typeof renderChart === "function") {
+                renderChart(data.average_score || 0);
+            }
+        } catch (e) {
+            console.log("Chart error ignored:", e);
         }
 
     } catch (err) {
