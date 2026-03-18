@@ -37,12 +37,11 @@ def evaluate(data: AnswerModel):
     strengths = 0
     weaknesses = 0
 
-    # Role-based keywords
     role_keywords = {
-        "python": ["function", "loop", "list", "dictionary", "class", "object"],
-        "java": ["class", "object", "jvm", "inheritance", "polymorphism"],
-        "data_analyst": ["sql", "data", "analysis", "query", "table", "join"],
-        "hr": ["team", "challenge", "experience", "learn", "growth"]
+        "python": ["function", "loop", "list", "dictionary", "class"],
+        "java": ["class", "object", "jvm", "inheritance"],
+        "data_analyst": ["sql", "data", "query", "analysis"],
+        "hr": ["team", "challenge", "experience", "learn"]
     }
 
     keywords = role_keywords.get(data.role, [])
@@ -53,7 +52,6 @@ def evaluate(data: AnswerModel):
 
         keyword_score = sum(1 for k in keywords if k in ans_lower)
 
-        # Smart scoring logic
         if length > 80 and keyword_score >= 2:
             score = 9
             fb = "Strong answer with technical depth and clarity."
@@ -76,7 +74,9 @@ def evaluate(data: AnswerModel):
 
     avg = sum(scores) / len(scores)
 
-    # Final AI-style summary
+    # ✅ FORCE SUMMARY (IMPORTANT FIX)
+    summary = "You need to improve your answer quality and explanation skills."
+    
     if strengths > weaknesses:
         summary = "You performed well with strong conceptual understanding."
     elif weaknesses > strengths:
@@ -87,5 +87,5 @@ def evaluate(data: AnswerModel):
     return {
         "average_score": round(avg * 10, 2),
         "feedback": feedback,
-        "summary": summary
+        "summary": summary  # ✅ THIS MUST BE PRESENT
     }
