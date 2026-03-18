@@ -81,6 +81,7 @@ async function finishInterview() {
     });
 
     const data = await res.json();
+    console.log(data);
 
     document.getElementById("result").classList.remove("hidden");
     document.getElementById("score").innerText = data.average_score + "%";
