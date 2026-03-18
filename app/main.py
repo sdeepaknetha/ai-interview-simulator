@@ -74,6 +74,10 @@ def evaluate(data: AnswerModel):
 
     avg = sum(scores) / len(scores)
 
+@app.get("/test")
+def test():
+    return {"message": "updated backend working", "summary": "THIS IS WORKING"}
+
     # ✅ FORCE SUMMARY (IMPORTANT FIX)
     summary = "AI Analysis: You need to improve your answer quality and explanation skills."
     
