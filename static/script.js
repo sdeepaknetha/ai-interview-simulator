@@ -89,7 +89,7 @@ async function finishInterview() {
     renderChart(data.average_score);
 
     // 🔥 AI Summary
-    document.getElementById("summary").innerText = data.summary || "No summary available";
+    document.getElementById("summaryBox").innerText = "🧠 " + (data.summary || "No summary available");
     
     let fbHTML = "<h3>Detailed Feedback:</h3>";
     data.feedback.forEach(f => {
