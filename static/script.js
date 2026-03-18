@@ -81,17 +81,25 @@ async function finishInterview() {
     });
 
     const data = await res.json();
-    console.log("FULL RESPONSE:", data);
+
+    console.log("FULL RESPONSE:", data); // 🔥 DEBUG
 
     document.getElementById("result").classList.remove("hidden");
+
     document.getElementById("score").innerText = data.average_score + "%";
 
     renderChart(data.average_score);
 
-    // 🔥 AI Summary
-    document.getElementById("summaryBox").innerText = "🧠 " + (data.summary || "No summary available");
-    
-    let fbHTML = "<h3>Detailed Feedback:</h3>";
+    // ✅ FORCE SUMMARY DISPLAY
+    const summaryEl = document.getElementById("summary");
+
+    if (summaryEl) {
+        summaryEl.innerText = data.summary ? data.summary : "No summary available";
+    } else {
+        console.error("SUMMARY ELEMENT NOT FOUND");
+    }
+
+    let fbHTML = "<h3>Feedback:</h3>";
     data.feedback.forEach(f => {
         fbHTML += `<p>• ${f}</p>`;
     });
