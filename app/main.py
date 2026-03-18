@@ -75,7 +75,7 @@ def evaluate(data: AnswerModel):
     avg = sum(scores) / len(scores)
 
     # ✅ FORCE SUMMARY (IMPORTANT FIX)
-    summary = "You need to improve your answer quality and explanation skills."
+    summary = "AI Analysis: You need to improve your answer quality and explanation skills."
     
     if strengths > weaknesses:
         summary = "You performed well with strong conceptual understanding."
