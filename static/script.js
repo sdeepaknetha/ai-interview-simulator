@@ -6,31 +6,47 @@ let time = 30;
 let timerInterval;
 
 async function startInterview() {
-    let role = document.getElementById("role").value;
-    let level = document.getElementById("level").value;
-    let limit = document.getElementById("limit").value;
+    try {
+        let role = document.getElementById("role").value;
+        let level = document.getElementById("level").value;
+        let limit = document.getElementById("limit").value;
 
-    const res = await fetch(`/questions?role=${role}&level=${level}&limit=${limit}`);
-    questions = await res.json();
+        const res = await fetch(`/questions?role=${role}&level=${level}&limit=${limit}`);
+        questions = await res.json();
 
-    current = 0;
-    answers = [];
+        if (!questions || questions.length === 0) {
+            alert("No questions found!");
+            return;
+        }
 
-    document.querySelector(".controls").style.display = "none";
-    document.getElementById("quiz").classList.remove("hidden");
+        current = 0;
+        answers = [];
 
-    showQuestion();
+        document.querySelector(".controls").style.display = "none";
+        document.getElementById("quiz").classList.remove("hidden");
+
+        showQuestion();
+
+    } catch (err) {
+        console.error("Start Error:", err);
+        alert("Error starting interview");
+    }
 }
 
 function showQuestion() {
-    time = 30;
-    startTimer();
+    try {
+        time = 30;
+        startTimer();
 
-    document.getElementById("progress").innerText =
-        `Question ${current + 1} / ${questions.length}`;
+        document.getElementById("progress").innerText =
+            `Question ${current + 1} / ${questions.length}`;
 
-    document.getElementById("question").innerText =
-        questions[current].question;
+        document.getElementById("question").innerText =
+            questions[current].question;
+
+    } catch (err) {
+        console.error("Show Question Error:", err);
+    }
 }
 
 function startTimer() {
@@ -48,61 +64,81 @@ function startTimer() {
 }
 
 function submitAnswer(auto = false) {
-    clearInterval(timerInterval);
+    try {
+        clearInterval(timerInterval);
 
-    let ans = document.getElementById("answer").value;
+        let ans = document.getElementById("answer").value;
 
-    if (!auto && !ans.trim()) {
-        alert("Enter answer!");
-        return;
-    }
+        if (!auto && !ans.trim()) {
+            alert("Enter answer!");
+            return;
+        }
 
-    answers.push(ans || "No Answer");
-    document.getElementById("answer").value = "";
+        answers.push(ans || "No Answer");
+        document.getElementById("answer").value = "";
 
-    current++;
+        current++;
 
-    if (current < questions.length) {
-        showQuestion();
-    } else {
-        finishInterview();
+        if (current < questions.length) {
+            showQuestion();
+        } else {
+            finishInterview();
+        }
+
+    } catch (err) {
+        console.error("Submit Error:", err);
     }
 }
 
 async function finishInterview() {
-    document.getElementById("quiz").classList.add("hidden");
+    try {
+        document.getElementById("quiz").classList.add("hidden");
 
-    let role = document.getElementById("role").value;
+        let role = document.getElementById("role").value;
 
-    const res = await fetch("/evaluate", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({answers: answers, role: role})
-    });
+        const res = await fetch("/evaluate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({answers: answers, role: role})
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    console.log("FULL RESPONSE:", data); // 🔥 DEBUG
+        console.log("FULL RESPONSE:", data);
 
-    document.getElementById("result").classList.remove("hidden");
+        document.getElementById("result").classList.remove("hidden");
 
-    document.getElementById("score").innerText = data.average_score + "%";
+        // ✅ SAFE SCORE
+        document.getElementById("score").innerText =
+            (data.average_score ? data.average_score : 0) + "%";
 
-    renderChart(data.average_score);
+        // ✅ SAFE SUMMARY
+        const summaryEl = document.getElementById("summary");
+        if (summaryEl) {
+            summaryEl.innerText =
+                data.summary || "Performance summary not available.";
+        }
 
-    // ✅ FORCE SUMMARY DISPLAY
-    const summaryEl = document.getElementById("summary");
+        // ✅ SAFE FEEDBACK
+        let fbHTML = "<h3>Feedback:</h3>";
 
-    if (summaryEl) {
-        summaryEl.innerText = data.summary ? data.summary : "No summary available";
-    } else {
-        console.error("SUMMARY ELEMENT NOT FOUND");
+        if (data.feedback && data.feedback.length > 0) {
+            data.feedback.forEach(f => {
+                fbHTML += `<p>• ${f}</p>`;
+            });
+        } else {
+            fbHTML += "<p>No feedback available</p>";
+        }
+
+        document.getElementById("feedbackBox").innerHTML = fbHTML;
+
+        // ✅ SAFE CHART (no crash)
+        if (typeof renderChart === "function") {
+            renderChart(data.average_score || 0);
+        }
+
+    } catch (err) {
+        console.error("Finish Error:", err);
+        alert("Something went wrong while finishing interview!");
     }
-
-    let fbHTML = "<h3>Feedback:</h3>";
-    data.feedback.forEach(f => {
-        fbHTML += `<p>• ${f}</p>`;
-    });
-
-    document.getElementById("feedbackBox").innerHTML = fbHTML;
 }
