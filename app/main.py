@@ -34,62 +34,39 @@ class AnswerModel(BaseModel):
 def evaluate(data: AnswerModel):
     scores = []
     feedback = []
-    strengths = 0
-    weaknesses = 0
-
-    role_keywords = {
-        "python": ["function", "loop", "list", "dictionary", "class"],
-        "java": ["class", "object", "jvm", "inheritance"],
-        "data_analyst": ["sql", "data", "query", "analysis"],
-        "hr": ["team", "challenge", "experience", "learn"]
-    }
-
-    keywords = role_keywords.get(data.role, [])
 
     for ans in data.answers:
-        ans_lower = ans.lower()
         length = len(ans.strip())
 
-        keyword_score = sum(1 for k in keywords if k in ans_lower)
-
-        if length > 80 and keyword_score >= 2:
+        if length > 80:
             score = 9
-            fb = "Strong answer with technical depth and clarity."
-            strengths += 1
-        elif length > 40 and keyword_score >= 1:
+            fb = "Strong answer with good explanation."
+        elif length > 40:
             score = 7
-            fb = "Good answer but can be more structured and detailed."
-            strengths += 1
+            fb = "Good answer but needs more detail."
         elif length > 15:
             score = 5
-            fb = "Basic answer, lacks technical depth."
-            weaknesses += 1
+            fb = "Basic answer."
         else:
             score = 3
-            fb = "Very short answer, needs improvement."
-            weaknesses += 1
+            fb = "Very short answer."
 
         scores.append(score)
         feedback.append(fb)
 
-    avg = sum(scores) / len(scores)
+    avg = (sum(scores) / len(scores)) * 10
 
-@app.get("/test")
-def test():
-    return {"message": "updated backend working", "summary": "THIS IS WORKING"}
-
-    # ✅ FORCE SUMMARY (IMPORTANT FIX)
-    summary = "AI Analysis: You need to improve your answer quality and explanation skills."
-    
-    if strengths > weaknesses:
-        summary = "You performed well with strong conceptual understanding."
-    elif weaknesses > strengths:
-        summary = "You need improvement in explaining concepts clearly."
+    # ✅ ALWAYS RETURN SUMMARY
+    summary = "You need improvement."
+    if avg >= 70:
+        summary = "Excellent performance!"
+    elif avg >= 50:
+        summary = "Good, but can improve."
     else:
-        summary = "Balanced performance, but there is room to improve."
+        summary = "Needs more practice."
 
     return {
-        "average_score": round(avg * 10, 2),
+        "average_score": round(avg, 2),
         "feedback": feedback,
-        "summary": summary  # ✅ THIS MUST BE PRESENT
+        "summary": summary
     }
