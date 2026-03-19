@@ -40,7 +40,6 @@ AI Interview Simulator is an intelligent web application that simulates real-tim
 
 ## 📊 Interview Result
 
-![Result](result(1).png)
 ![Result](result(2).png)
 ![Result](result(3).png)
 
