@@ -18,8 +18,9 @@ def home(request: Request):
 def get_questions(role: str, level: str, limit: int = Query(5)):
     data = questions_data.get(role, {}).get(level, [])
     random.shuffle(data)
-    return data[:limit]
-
+    # Return available questions if less than limit
+    return data[:min(limit, len(data))]
+    
 class AnswerModel(BaseModel):
     answers: list
     role: str
