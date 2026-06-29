@@ -2,28 +2,28 @@ let questions = [];
 let current = 0;
 let answers = [];
 let timerInterval = null;
-let timeLeft = 60; // 60 seconds per question
+let timeLeft = 30;
 
 function startTimer() {
     clearInterval(timerInterval);
-    timeLeft = 60;
-    updateTimerDisplay();
+    timeLeft = 30;
+    updateTimer();
     timerInterval = setInterval(() => {
         timeLeft--;
-        updateTimerDisplay();
+        updateTimer();
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            alert("Time's up! Moving to next question.");
             submitAnswer();
         }
     }, 1000);
 }
 
-function updateTimerDisplay() {
+function updateTimer() {
     const timerEl = document.getElementById("timer");
     if (timerEl) {
-        timerEl.innerText = `⏱ Time Left: ${timeLeft}s`;
+        timerEl.innerText = `⏳ ${timeLeft}`;
         timerEl.style.color = timeLeft <= 10 ? "red" : "white";
+        timerEl.style.fontWeight = "bold";
     }
 }
 
@@ -45,11 +45,11 @@ function showQuestion() {
         `Question ${current + 1} / ${questions.length}`;
     document.getElementById("question").innerText =
         questions[current].question;
-    startTimer(); // ✅ Start timer for each question
+    startTimer();
 }
 
 function submitAnswer() {
-    clearInterval(timerInterval); // ✅ Stop timer on submit
+    clearInterval(timerInterval);
     let ans = document.getElementById("answer").value;
     if (!ans.trim()) {
         ans = "No answer provided";
@@ -65,7 +65,7 @@ function submitAnswer() {
 }
 
 async function finishInterview() {
-    clearInterval(timerInterval); // ✅ Stop timer
+    clearInterval(timerInterval);
     document.getElementById("quiz").classList.add("hidden");
     let role = document.getElementById("role").value;
     const res = await fetch("/evaluate", {
